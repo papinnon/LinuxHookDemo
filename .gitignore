@@ -1,3 +1,5 @@
 .gdb*
 peda*
 main
+*.so
+tags
