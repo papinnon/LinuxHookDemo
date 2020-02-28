@@ -51,6 +51,7 @@ void load_so(pid_t pid, void * dlopen, const char * soPath)
 #define SYM Elf64_Sym
 #define addr_t void *
 #define addr(a,b) (void *)((char *)a+b)
+//Set G_gotplt
 void * find_symbol(pid_t pid , const char * SymName, const char * LibName)
 {/*{{{*/
 	EHDR ehdr;
@@ -116,11 +117,65 @@ void * find_symbol(pid_t pid , const char * SymName, const char * LibName)
 	return addr(ehdrp,sym_ent->st_value);
 }/*}}}*/
 
+void * GOTPLT;
+void gothook(pid_t pid, const char * funcorig, const char * funchook, const char * LibName)
+{
+	EHDR ehdr;
+	PHDR * phdr;
+	DYN  * dyn_ent;
+	SYM  * sym_ent;
+	addr_t dyn_section;
+	addr_t sym_section;
+	addr_t str_section;
+	uint64_t phsize;
+	uint64_t dyn_size;
+	uint64_t sym_cnt;
+	uint64_t str_size;
+	char * buffer;
+
+	//parse EHDR and PHDR
+	void * ehdrp= (void *)getLoadAddr(pid);
+	procread(pid, &ehdr, ehdrp, sizeof(ehdr));
+	phdr= (PHDR *)(ehdr.e_phoff+(char *)ehdrp);
+	phsize= ehdr.e_phentsize* ehdr.e_phnum;
+	buffer= new char[phsize];
+	procread(pid, buffer, phdr, phsize);	
+	for(int i=0; i< ehdr.e_phnum; ++i )
+	{
+		phdr= (PHDR *)(buffer+i*ehdr.e_phentsize);
+		if(phdr->p_type == PT_DYNAMIC)
+			break;
+	}
+	dyn_section = (addr_t) addr(ehdrp,phdr->p_vaddr);
+	dyn_size = (uint64_t) phdr->p_memsz;
+	delete [] buffer;
+	//parse .DYNAMIC seg
+	buffer = new char[dyn_size];
+	int && dyncnt= dyn_size/sizeof(DYN);
+	procread(pid , buffer, dyn_section, dyn_size);
+	for(int i=0; i< dyncnt; ++i)
+	{
+		dyn_ent= (DYN *)(buffer+ i* sizeof(DYN));
+		if(dyn_ent->d_tag == DT_PLTGOT)
+		{
+			GOTPLT= addr(dyn_ent->d_un.dptr,0);
+			break;
+		}
+
+	}	
+	delete [] buffer;
+
+	//Hooking
+	void *pfunchook= find_symbol(pid, funchook, LibName);
+	procwrite(pid, &pfunchook, GOTPLT, sizeof(pfunchook))
+	
+}
 int main(int argc, char *argv[])
 {
 	pid_t pid =  atol(argv[1]);
 	void * dlopen=find_symbol(pid,"__libc_dlopen_mode","libc-2.30.so");
 	load_so(pid, dlopen, "/tmp/Hook/src/hook.so");
+	std::cout << GOTPLT<<std::endl;
 }
 
 

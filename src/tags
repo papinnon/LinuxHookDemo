@@ -942,6 +942,7 @@ GNU_PROPERTY_X86_ISA_1_SSE4_1	/usr/include/elf.h	/^#define GNU_PROPERTY_X86_ISA_
 GNU_PROPERTY_X86_ISA_1_SSE4_2	/usr/include/elf.h	/^#define GNU_PROPERTY_X86_ISA_1_SSE4_2	/;"	d
 GNU_PROPERTY_X86_ISA_1_SSSE3	/usr/include/elf.h	/^#define GNU_PROPERTY_X86_ISA_1_SSSE3	/;"	d
 GNU_PROPERTY_X86_ISA_1_USED	/usr/include/elf.h	/^#define GNU_PROPERTY_X86_ISA_1_USED	/;"	d
+GOTPLT	inject.cpp	/^void * GOTPLT;$/;"	v	typeref:typename:void *
 GRP_COMDAT	/usr/include/elf.h	/^#define GRP_COMDAT	/;"	d
 HOST_STACK_END_ADDR	/usr/include/sys/user.h	/^#define HOST_STACK_END_ADDR	/;"	d
 HOST_TEXT_START_ADDR	/usr/include/sys/user.h	/^#define HOST_TEXT_START_ADDR	/;"	d
@@ -8529,6 +8530,7 @@ gmtime	/usr/include/time.h	/^extern struct tm *gmtime (const time_t *__timer) __
 gmtime_r	/usr/include/time.h	/^extern struct tm *gmtime_r (const time_t *__restrict __timer,$/;"	p	typeref:struct:tm *	signature:(const time_t * __restrict __timer,struct tm * __restrict __tp)
 good	/usr/include/c++/9.2.1/bits/basic_ios.h	/^      good() const$/;"	f	class:std::basic_ios	typeref:typename:bool	access:public	signature:() const
 goodbit	/usr/include/c++/9.2.1/bits/ios_base.h	/^    static const iostate goodbit =	_S_goodbit;$/;"	m	class:std::ios_base	typeref:typename:const iostate	access:public
+gothook	inject.cpp	/^void gothook(pid_t pid, const char * funcorig, const char * funchook, const char * LibName)$/;"	f	typeref:typename:void
 gpr_size	/usr/include/elf.h	/^  unsigned char gpr_size;$/;"	m	struct:__anon7cf58a1d2d08	typeref:typename:unsigned char	access:public
 grantpt	/usr/include/stdlib.h	/^extern int grantpt (int __fd) __THROW;$/;"	p	typeref:typename:int	signature:(int __fd)
 graph	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/ctype_base.h	/^    static const mask graph 	= _ISalpha | _ISdigit | _ISpunct;$/;"	m	struct:std::ctype_base	typeref:typename:const mask	access:public
