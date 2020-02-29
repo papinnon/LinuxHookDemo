@@ -3,3 +3,4 @@ peda*
 main
 *.so
 tags
+test

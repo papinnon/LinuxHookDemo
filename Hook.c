@@ -1,8 +1,13 @@
 #ifdef MAIN
 #include<stdio.h>
+#include <unistd.h>
 int volatile main()
 {
-	printf("%s%d%s","Hello World!\n",1,"fuck!\n");
+	while(1)
+	{
+		printf("%s%d\n","Hello World",1);
+		sleep(3);
+	}
 	return 0;
 }
 #endif
@@ -37,7 +42,7 @@ int printf(const char * format, ...)
 	PRINTF fnc = (PRINTF)dlsym(handle, "printf");
 	if(!fnc)
 		puts("Failed get sym");
-	fnc("Hooking test\n");
+	fnc("Hey, Fuck YOU!\n");
 	va_start(args, format);
 	list * plst = getlist(args);
 	int ret =fnc(format, plst->ptr[0], plst->ptr[1], plst->ptr[2]);	

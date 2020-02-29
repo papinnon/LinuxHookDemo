@@ -127,13 +127,21 @@ void gothook(pid_t pid, const char * funcorig, const char * funchook, const char
 	addr_t dyn_section;
 	addr_t sym_section;
 	addr_t str_section;
+	addr_t rela_section;
+	addr_t target; // the hook gotplt entry
 	uint64_t phsize;
 	uint64_t dyn_size;
 	uint64_t sym_cnt;
 	uint64_t str_size;
+	uint64_t rela_sz;
+	uint64_t relaentsz;
 	char * buffer;
-
+	char * namebuf;
 	//parse EHDR and PHDR
+	int origlen = strlen(funcorig)+1;
+	namebuf = new char[origlen];
+	memset(namebuf, 0, origlen);
+	
 	void * ehdrp= (void *)getLoadAddr(pid);
 	procread(pid, &ehdr, ehdrp, sizeof(ehdr));
 	phdr= (PHDR *)(ehdr.e_phoff+(char *)ehdrp);
@@ -157,25 +165,60 @@ void gothook(pid_t pid, const char * funcorig, const char * funchook, const char
 	{
 		dyn_ent= (DYN *)(buffer+ i* sizeof(DYN));
 		if(dyn_ent->d_tag == DT_PLTGOT)
-		{
-			GOTPLT= addr(dyn_ent->d_un.dptr,0);
-			break;
-		}
+			GOTPLT= addr(dyn_ent->d_un.d_ptr,0);
+		else if(dyn_ent->d_tag == DT_JMPREL)
+			rela_section= addr(dyn_ent->d_un.d_ptr,0);
+		else if(dyn_ent->d_tag ==DT_RELSZ)
+			rela_sz = dyn_ent->d_un.d_ptr;
+		else if(dyn_ent->d_tag == DT_RELENT)
+			relaentsz= dyn_ent->d_un.d_ptr;
+		else if(dyn_ent->d_tag == DT_STRTAB)
+			str_section= addr(dyn_ent->d_un.d_ptr,0);
+		else if(dyn_ent->d_tag == DT_SYMTAB)
+			sym_section= addr(dyn_ent->d_un.d_ptr,0);
+		else if(dyn_ent->d_tag == DT_STRSZ)
+			str_size= (uint64_t) dyn_ent->d_un.d_val;
 
 	}	
 	delete [] buffer;
+	//parse rela
+	buffer = new char[0x10000];
+	relaentsz=0x18;
+	procread(pid, buffer, rela_section, 0x10000);
+	Elf64_Rela *rela_ent;
+	for(int i=0;i < 0x10000/relaentsz; ++i)
+	{
+		rela_ent= (Elf64_Rela *)(buffer+i*relaentsz);
+		if(ELF64_R_TYPE(rela_ent->r_info) == R_X86_64_JUMP_SLOT)
+		{
+			uint32_t symidx= ELF64_R_SYM(rela_ent->r_info);
+			uint32_t strpos =0;
+			procread(pid, &strpos, addr(sym_section,symidx*0x18), 4);
+			procread(pid, namebuf, addr(str_section,strpos), origlen);
+			if(!strncmp(namebuf, funcorig, origlen-1))
+				break;
+		}
 
+	}
+	target = addr(ehdrp,rela_ent->r_offset);
+	std::cout <<"Found "<<funcorig <<" Got Entry: "<< std::hex<<target<<std::endl;
 	//Hooking
 	void *pfunchook= find_symbol(pid, funchook, LibName);
-	procwrite(pid, &pfunchook, GOTPLT, sizeof(pfunchook))
-	
+	procwrite(pid, &pfunchook, target, sizeof(pfunchook));
+	delete []buffer;
+	delete []namebuf;
+	return ;
 }
 int main(int argc, char *argv[])
 {
 	pid_t pid =  atol(argv[1]);
+	char * origfunc = argv[2];
+	char * hookfunc = argv[3];
+	char * libPath = argv[4];
 	void * dlopen=find_symbol(pid,"__libc_dlopen_mode","libc-2.30.so");
-	load_so(pid, dlopen, "/tmp/Hook/src/hook.so");
-	std::cout << GOTPLT<<std::endl;
+	std::cout<<"DLL Injection: "<<libPath<<std::endl;
+	load_so(pid, dlopen, libPath);
+	gothook(pid, origfunc, hookfunc,libPath);
 }
 
 
