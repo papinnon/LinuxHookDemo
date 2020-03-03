@@ -55,7 +55,7 @@ void load_so(pid_t pid, void * dlopen, const char * soPath)
 	return;
 }/*}}}*/
 
-void load_sodbg(pid_t pid, void * dlopen, void * dlerror,const char * soPath)
+void load_sodbg(pid_t pid, void * dlopen, const char * soPath)
 {/*{{{*/
 	regs reg_orig, reg;
 	fpregs fpreg_orig, fpreg;
@@ -69,52 +69,97 @@ void load_sodbg(pid_t pid, void * dlopen, void * dlerror,const char * soPath)
 	memcpy(namebuf, soPath, length);
 
 
-	void * loadaddr= (void*)(getLoadAddr(pid));
-	f <<"write :" <<std::hex<< loadaddr <<std::endl;
-	procwrite(pid, "F",loadaddr, 1);
+	//ptrace_attach(pid, 1);
+	//ptrace(PTRACE_SEIZE, pid, 0, 0);
+	
 
-
-
-	ptrace_attach(pid, 1);
 	buffer = (char *)malloc(stacksize);
-	sleep(1);
+	ptrace(PTRACE_SEIZE, pid, 0, 0);
+	ptrace(PTRACE_INTERRUPT,pid,0,0);
+	waitpid(pid, &status, 0);
 	ptrace_getregs(pid, &reg_orig, &fpreg_orig);
+	ptrace(PTRACE_CONT,pid,0,0);
+
 	memcpy(&reg, &reg_orig, sizeof(reg));
-	procread(pid, buffer, (void *)reg.rsp, stacksize);
-	procwrite(pid, &ret, (void* )reg.rsp, sizeof(ret));
-	procwrite(pid, namebuf, (void*)(reg.rsp+ sizeof(ret)),length+1 );
-	sleep(1);
+
 	reg.rdi= reg.rsp+sizeof(ret);
 	reg.rsi= RTLD_NOW|RTLD_GLOBAL|RTLD_NODELETE;
 	reg.rip= (uint64_t)dlopen+2;
+	//save stack
+	ptrace(PTRACE_SEIZE, pid, 0, 0);
+	ptrace(PTRACE_INTERRUPT,pid,0,0);
+	waitpid(pid, &status, 0);
+	procread(pid, buffer, (void *)reg.rsp, stacksize);
+	// write ret, name
+	procwrite(pid, &ret, (void* )reg.rsp, sizeof(ret));
+	procwrite(pid, namebuf, (void*)(reg.rsp+ sizeof(ret)),length+1 );
 	ptrace_setregs(pid, &reg, 0);
 
-	if(ptrace(PTRACE_CONT, pid, NULL, NULL) == -1)
-	{
-		puts("error Continue");
-		f << "error Continue"<<std::endl;
-		f.close();
-		exit(1);
-	}
-	waitpid(pid, &status, 0);
-	ptrace_getregs(pid, &reg, 0);
-	std::cout << "dlopen addr:"<<std::hex<<dlopen;
-	f<< "loading : " <<namebuf <<std::endl;
-	f << "dlopen addr:"<<std::hex<<dlopen;
-	std::cout << " finish addr:"<< std::hex<< reg.rip<< std::endl;
-	f<< " finish addr:"<< std::hex<< reg.rip<< std::endl;
-	
-//	ptrace_attach(pid,0);
-//	kill(pid, SIGSTOP);	
-//	kill(getpid(), SIGSTOP);	
+	ptrace(PTRACE_CONT,pid,0,0);
 
+	
+	waitpid(pid, &status, 0);
+	//ptrace_getregs(pid, &reg, 0);
+
+	//std::cout << "dlopen addr:"<<std::hex<<dlopen;
+	//f<< "loading : " <<namebuf <<std::endl;
+	//f << "dlopen addr:"<<std::hex<<dlopen;
+	//std::cout << " finish addr:"<< std::hex<< reg.rip<< std::endl;
+	//f<< " finish addr:"<< std::hex<< reg.rip<< std::endl;
+	
 
 	procwrite(pid, buffer, (void *)reg_orig.rsp, stacksize);
 	ptrace_setregs(pid, &reg_orig, &fpreg_orig);
+	ptrace(PTRACE_CONT,pid,0,0);
 	free(buffer);
-	ptrace_attach(pid,0);
 	return;
 }/*}}}*/
+#include <sys/mman.h>
+void change_protect(pid_t pid, void * mprotect, void * addr, int length)
+{
+	char buf [64];
+	uint64_t ret = 0xdeadbeefcafebabe;
+	int status;
+	ofstream f;	
+	f.open("/tmp/reglog");	
+	regs reg_orig, reg;
+	fpregs fpreg_orig, fpreg;
+
+//	kill(getpid(),SIGSTOP);
+
+	ptrace(PTRACE_SEIZE, pid, 0, 0);
+	ptrace(PTRACE_INTERRUPT,pid,0,0);
+	waitpid(pid, &status, 0);
+	ptrace_getregs(pid, &reg_orig, &fpreg_orig);
+	ptrace(PTRACE_CONT,pid,0,0);
+	memcpy(&reg, &reg_orig, sizeof(reg));
+	reg.rdi= (uint64_t)addr;
+	reg.rsi= length; 
+	reg.rdx= PROT_WRITE | PROT_READ|PROT_EXEC;
+	reg.rip= (uint64_t)mprotect+3;
+
+	ptrace(PTRACE_SEIZE, pid, 0, 0);
+	ptrace(PTRACE_INTERRUPT,pid,0,0);
+	waitpid(pid, &status, 0);
+	procread(pid, buf, (void *)reg.rsp, 0x40);
+	procwrite(pid, &ret, (void* )reg.rsp, sizeof(ret));
+	ptrace_setregs(pid, &reg, 0);
+	kill(pid, SIGSTOP);
+	ptrace(PTRACE_DETACH, pid, 0, 0);
+	//ptrace(PTRACE_CONT,pid,0,0);
+	waitpid(pid, &status, 0);
+
+	ptrace_getregs(pid,&reg,0);
+
+	f << "start :" << mprotect << " end: "<<std::hex<< reg.rip << std::endl;
+	f.close();
+	procwrite(pid, buf, (void *)reg_orig.rsp, 0x40);
+	ptrace_setregs(pid, &reg_orig, &fpreg_orig);
+	ptrace(PTRACE_CONT,pid,0,0);
+	return;
+}
+
+
 #define EHDR Elf64_Ehdr
 #define PHDR Elf64_Phdr
 #define DYN Elf64_Dyn

@@ -2,6 +2,8 @@
 #include<stdio.h>
 #include <unistd.h>
 #include <string.h>
+
+
 int  main()
 {
 	char * buf;
@@ -20,6 +22,9 @@ int  main()
 #include <stdarg.h>
 #include <stdio.h>
 #include <dlfcn.h>
+#include "src/ptraceAPI.h"
+#include "src/inject.hpp"
+#include <signal.h>
 typedef int(*PRINTF)(const char * ,...);
 
 #define MaxArgCount 8
@@ -54,9 +59,7 @@ int printf_HOOOOOOOOOOOK(const char * format, ...)
 	return ret;
 
 }/*}}}*/
-#include "src/ptraceAPI.h"
-#include "src/inject.h"
-#include <signal.h>
+
 typedef pid_t (*FORK)(void);
 pid_t  fork(void)
 {/*{{{*/
@@ -90,7 +93,7 @@ pid_t  fork(void)
 	//kill(getpid(), SIGSTOP);
 
 	
-	gothook(child , "fork", "fork", libName);
+	//gothook(child , "fork", "fork", libName);
 	gothook(child , "execv", "_Z10execv_hookPKcPPc", libName);
 	kill(child,SIGCONT);
 	return child;
@@ -112,11 +115,16 @@ size_t strlenhook(const char *s)
 }/*}}}*/
 
 #include <string>
+#include <fstream>
+using std::fstream;
 extern  char ** environ ;
 typedef int (*EXECV)(const char * , char *  [], char **);
 int execv_hook(const char * pathname , char * argv[])
 {/*{{{*/
+#define OFF__ 0x461e4
+#define Writable 0xd0000
 	FILE * fp;
+	ofstream f;
 	void * hd= dlopen("libc-2.30.so",RTLD_LAZY);
 	char buf [20];
 	char buf2[200];
@@ -127,17 +135,27 @@ int execv_hook(const char * pathname , char * argv[])
 	tid = fork();
 	if(!tid)
 	{
+		f.open("/tmp/output");
 		cpid= getpid()+1;
+		f << cpid<<std::endl;	
+//		kill(getpid(),SIGSTOP);
 		sleep(1);
-		kill(cpid, SIGSTOP);
-
-		void * loadaddr= (void*)(getLoadAddr(cpid)+0xcf348);
-		procwrite(cpid, "F",loadaddr, 1);
-
-		void * dlopen=find_symbol(cpid,"__libc_dlopen_mode","libc-2.30.so");
+		void * mprotect=find_symbol(cpid,"mprotect","libc-2.30.so");
+		char call ='\xe8';
+		void * loadaddr= (void*)(getLoadAddr(cpid));
+		void * hook = addr(loadaddr, OFF__);
+		ptrace(PTRACE_SEIZE, cpid, 0, 0);
+		ptrace(PTRACE_INTERRUPT,cpid,0,0);
+		waitpid(cpid, NULL, 0);	
+		procwrite(cpid, "FUCKFUCKFUCKFUCK",addr(loadaddr,Writable), 16);
+		ptrace(PTRACE_CONT,cpid,0,0);
+		f << "write at: "<<addr(loadaddr,Writable)<<std::endl;
+		change_protect(cpid,mprotect,addr(loadaddr,Writable),0x4000);
+		f<< "Change prot at : "<< addr(loadaddr,Writable) << " Using :" << mprotect<<std::endl;
 		void * dlerror=find_symbol(cpid,"dlerror","libdl-2.30.so");
-		kill(cpid,SIGCONT);
-		//load_so(cpid, dlopen , name);
+		void * dlopen=find_symbol(cpid,"dlopen","libdl-2.30.so");
+		f.close();
+		//load_sodbg(cpid, dlopen , (char *)name);
 
 		//load_sodbg(cpid, dlopen ,dlerror, name);
 		exit(0);

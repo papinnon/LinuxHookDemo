@@ -21,3 +21,5 @@ Usage:
 $ sudo ./debug/main [target pid]  [Import Function Name(origin)]  [Hook Function Name(hook)]  [Path/to/Library/Injected]  
 $ sudo ./debug/inject [target pid]    [Path/to/Library/Injected]  
 ``` 
+## Hook SSH Call
+发现ssh用了seccomp.....
