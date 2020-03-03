@@ -20,6 +20,7 @@ static uint64_t getLoadAddr(pid_t pid)
 	char  path[MaxPidLength];
 	FILE * fp;
 	uint64_t result,trash;
+	usleep(100);
 	memset(path,0 ,MaxPidLength);
 	snprintf(path, 0x100, fmt, (unsigned long )pid);
 	if( (fp = fopen(path, "r")) == NULL)
@@ -41,7 +42,7 @@ static uint64_t getlibAddr(pid_t pid, const char * libName)
 	FILE * fp;
 	uint64_t result,size;
 	char * buffer, *interator , *leftover, * garbage;
-	char search[] = "%lx-%lx r--p %s /usr/%s/%7s";
+	char search[] = "%lx-%lx r--p %s %s";
 	memset(path,0 ,MaxPidLength);
 	snprintf(path, 0x100, fmt, pid);
 	// Open file read all in buffer
@@ -58,6 +59,7 @@ static uint64_t getlibAddr(pid_t pid, const char * libName)
 	garbage = (char *)malloc(0x2000);
 	fread(buffer, 0x20000, 1 , fp);
 	interator= buffer;
+	result =0;
 	while((interator = split(interator,'\n', &leftover))!= NPOS)
 	{
 		char tmp[7];
@@ -66,17 +68,13 @@ static uint64_t getlibAddr(pid_t pid, const char * libName)
 			free(leftover);
 			continue;
 		}
-		sscanf(leftover, search, &result, garbage,garbage+0x100,garbage+0x200,tmp);
+		sscanf(leftover, search, &result, garbage,garbage+0x100,tmp);
 		free(leftover);
 		break;
 	}
 	free(garbage);
 	free(buffer);
 	fclose(fp);
-	return result;
-
-
-
 	return result;
 }/*}}}*/
 

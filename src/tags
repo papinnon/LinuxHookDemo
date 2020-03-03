@@ -313,7 +313,7 @@ DT_VERNEEDNUM	/usr/include/elf.h	/^#define	DT_VERNEEDNUM	/;"	d
 DT_VERSIONTAGIDX	/usr/include/elf.h	/^#define DT_VERSIONTAGIDX(/;"	d	signature:(tag)
 DT_VERSIONTAGNUM	/usr/include/elf.h	/^#define DT_VERSIONTAGNUM /;"	d
 DT_VERSYM	/usr/include/elf.h	/^#define DT_VERSYM	/;"	d
-DYN	inject.cpp	/^#define DYN /;"	d	file:
+DYN	inject.h	/^#define DYN /;"	d
 E2BIG	/usr/include/asm-generic/errno-base.h	/^#define	E2BIG	/;"	d
 EACCES	/usr/include/asm-generic/errno-base.h	/^#define	EACCES	/;"	d
 EADDRINUSE	/usr/include/asm-generic/errno.h	/^#define	EADDRINUSE	/;"	d
@@ -458,7 +458,7 @@ EF_SPARC_HAL_R1	/usr/include/elf.h	/^#define EF_SPARC_HAL_R1	/;"	d
 EF_SPARC_LEDATA	/usr/include/elf.h	/^#define EF_SPARC_LEDATA	/;"	d
 EF_SPARC_SUN_US1	/usr/include/elf.h	/^#define EF_SPARC_SUN_US1	/;"	d
 EF_SPARC_SUN_US3	/usr/include/elf.h	/^#define EF_SPARC_SUN_US3	/;"	d
-EHDR	inject.cpp	/^#define EHDR /;"	d	file:
+EHDR	inject.h	/^#define EHDR /;"	d
 EHOSTDOWN	/usr/include/asm-generic/errno.h	/^#define	EHOSTDOWN	/;"	d
 EHOSTUNREACH	/usr/include/asm-generic/errno.h	/^#define	EHOSTUNREACH	/;"	d
 EHWPOISON	/usr/include/asm-generic/errno.h	/^#define EHWPOISON	/;"	d
@@ -942,7 +942,7 @@ GNU_PROPERTY_X86_ISA_1_SSE4_1	/usr/include/elf.h	/^#define GNU_PROPERTY_X86_ISA_
 GNU_PROPERTY_X86_ISA_1_SSE4_2	/usr/include/elf.h	/^#define GNU_PROPERTY_X86_ISA_1_SSE4_2	/;"	d
 GNU_PROPERTY_X86_ISA_1_SSSE3	/usr/include/elf.h	/^#define GNU_PROPERTY_X86_ISA_1_SSSE3	/;"	d
 GNU_PROPERTY_X86_ISA_1_USED	/usr/include/elf.h	/^#define GNU_PROPERTY_X86_ISA_1_USED	/;"	d
-GOTPLT	inject.cpp	/^void * GOTPLT;$/;"	v	typeref:typename:void *
+GOTPLT	inject.h	/^void * GOTPLT;$/;"	v	typeref:typename:void *
 GRP_COMDAT	/usr/include/elf.h	/^#define GRP_COMDAT	/;"	d
 HOST_STACK_END_ADDR	/usr/include/sys/user.h	/^#define HOST_STACK_END_ADDR	/;"	d
 HOST_TEXT_START_ADDR	/usr/include/sys/user.h	/^#define HOST_TEXT_START_ADDR	/;"	d
@@ -1224,7 +1224,7 @@ PF_PARISC_SBP	/usr/include/elf.h	/^#define PF_PARISC_SBP	/;"	d
 PF_R	/usr/include/elf.h	/^#define PF_R	/;"	d
 PF_W	/usr/include/elf.h	/^#define PF_W	/;"	d
 PF_X	/usr/include/elf.h	/^#define PF_X	/;"	d
-PHDR	inject.cpp	/^#define PHDR /;"	d	file:
+PHDR	inject.h	/^#define PHDR /;"	d
 PN_XNUM	/usr/include/elf.h	/^#define PN_XNUM	/;"	d
 PPC64_LOCAL_ENTRY_OFFSET	/usr/include/elf.h	/^#define PPC64_LOCAL_ENTRY_OFFSET(/;"	d	signature:(other)
 PPC64_OPT_LOCALENTRY	/usr/include/elf.h	/^#define PPC64_OPT_LOCALENTRY	/;"	d
@@ -3476,7 +3476,7 @@ STV_DEFAULT	/usr/include/elf.h	/^#define STV_DEFAULT	/;"	d
 STV_HIDDEN	/usr/include/elf.h	/^#define STV_HIDDEN	/;"	d
 STV_INTERNAL	/usr/include/elf.h	/^#define STV_INTERNAL	/;"	d
 STV_PROTECTED	/usr/include/elf.h	/^#define STV_PROTECTED	/;"	d
-SYM	inject.cpp	/^#define SYM /;"	d	file:
+SYM	inject.h	/^#define SYM /;"	d
 SYMINFO_BT_LOWRESERVE	/usr/include/elf.h	/^#define SYMINFO_BT_LOWRESERVE	/;"	d
 SYMINFO_BT_PARENT	/usr/include/elf.h	/^#define SYMINFO_BT_PARENT	/;"	d
 SYMINFO_BT_SELF	/usr/include/elf.h	/^#define SYMINFO_BT_SELF	/;"	d
@@ -7669,8 +7669,8 @@ access	/usr/include/unistd.h	/^extern int access (const char *__name, int __type
 acct	/usr/include/unistd.h	/^extern int acct (const char *__name) __THROW;$/;"	p	typeref:typename:int	signature:(const char * __name)
 acosf	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/c++config.h	/^# define acosf /;"	d
 acosl	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/c++config.h	/^# define acosl /;"	d
-addr	inject.cpp	/^#define addr(/;"	d	file:
-addr_t	inject.cpp	/^#define addr_t /;"	d	file:
+addr	inject.h	/^#define addr(/;"	d
+addr_t	inject.h	/^#define addr_t /;"	d
 address	/usr/include/c++/9.2.1/ext/new_allocator.h	/^      address(const_reference __x) const _GLIBCXX_NOEXCEPT$/;"	f	class:__gnu_cxx::new_allocator	typeref:typename:const_pointer	access:public	signature:(const_reference __x) const
 address	/usr/include/c++/9.2.1/ext/new_allocator.h	/^      address(reference __x) const _GLIBCXX_NOEXCEPT$/;"	f	class:__gnu_cxx::new_allocator	typeref:typename:pointer	access:public	signature:(reference __x) const
 address_family_not_supported	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/error_constants.h	/^      address_family_not_supported = 		EAFNOSUPPORT,$/;"	e	enum:std::errc	access:public
@@ -8342,7 +8342,7 @@ find_last_of	/usr/include/c++/9.2.1/bits/basic_string.h	/^      find_last_of(_Ch
 find_last_of	/usr/include/c++/9.2.1/bits/basic_string.h	/^      find_last_of(const _CharT* __s, size_type __pos = npos) const$/;"	f	class:std::basic_string	typeref:typename:size_type	access:public	signature:(const _CharT * __s,size_type __pos=npos) const
 find_last_of	/usr/include/c++/9.2.1/bits/basic_string.h	/^      find_last_of(const _CharT* __s, size_type __pos, size_type __n) const$/;"	p	class:std::basic_string	typeref:typename:size_type	access:public	signature:(const _CharT * __s,size_type __pos,size_type __n) const
 find_last_of	/usr/include/c++/9.2.1/bits/basic_string.h	/^      find_last_of(const basic_string& __str, size_type __pos = npos) const$/;"	f	class:std::basic_string	typeref:typename:size_type	access:public	signature:(const basic_string & __str,size_type __pos=npos) const
-find_symbol	inject.cpp	/^void * find_symbol(pid_t pid , const char * SymName, const char * LibName)$/;"	f	typeref:typename:void *
+find_symbol	inject.h	/^void * find_symbol(pid_t pid , const char * SymName, const char * LibName)$/;"	f	typeref:typename:void *
 finite	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/c++config.h	/^# define finite /;"	d
 finitef	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/c++config.h	/^# define finitef /;"	d
 finitel	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/c++config.h	/^# define finitel /;"	d
@@ -8530,7 +8530,7 @@ gmtime	/usr/include/time.h	/^extern struct tm *gmtime (const time_t *__timer) __
 gmtime_r	/usr/include/time.h	/^extern struct tm *gmtime_r (const time_t *__restrict __timer,$/;"	p	typeref:struct:tm *	signature:(const time_t * __restrict __timer,struct tm * __restrict __tp)
 good	/usr/include/c++/9.2.1/bits/basic_ios.h	/^      good() const$/;"	f	class:std::basic_ios	typeref:typename:bool	access:public	signature:() const
 goodbit	/usr/include/c++/9.2.1/bits/ios_base.h	/^    static const iostate goodbit =	_S_goodbit;$/;"	m	class:std::ios_base	typeref:typename:const iostate	access:public
-gothook	inject.cpp	/^void gothook(pid_t pid, const char * funcorig, const char * funchook, const char * LibName)$/;"	f	typeref:typename:void
+gothook	inject.h	/^void gothook(pid_t pid, const char * funcorig, const char * funchook, const char * LibName)$/;"	f	typeref:typename:void
 gpr_size	/usr/include/elf.h	/^  unsigned char gpr_size;$/;"	m	struct:__anon7cf58a1d2d08	typeref:typename:unsigned char	access:public
 grantpt	/usr/include/stdlib.h	/^extern int grantpt (int __fd) __THROW;$/;"	p	typeref:typename:int	signature:(int __fd)
 graph	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/ctype_base.h	/^    static const mask graph 	= _ISalpha | _ISdigit | _ISpunct;$/;"	m	struct:std::ctype_base	typeref:typename:const mask	access:public
@@ -8915,7 +8915,8 @@ literals	/usr/include/c++/9.2.1/x86_64-pc-linux-gnu/bits/c++config.h	/^  inline 
 llabs	/usr/include/stdlib.h	/^__extension__ extern long long int llabs (long long int __x)$/;"	p	typeref:typename:__extension__ long long int	signature:(long long int __x)
 lldiv	/usr/include/stdlib.h	/^__extension__ extern lldiv_t lldiv (long long int __numer,$/;"	p	typeref:typename:__extension__ lldiv_t	signature:(long long int __numer,long long int __denom)
 lldiv_t	/usr/include/stdlib.h	/^  } lldiv_t;$/;"	t	typeref:struct:__anonf3b68ce80308
-load_so	inject.cpp	/^void load_so(pid_t pid, void * dlopen, const char * soPath)$/;"	f	typeref:typename:void
+load_so	inject.h	/^void load_so(pid_t pid, void * dlopen, const char * soPath)$/;"	f	typeref:typename:void
+load_sodbg	inject.h	/^void load_sodbg(pid_t pid, void * dlopen, void * dlerror,const char * soPath)$/;"	f	typeref:typename:void
 locale	/usr/include/c++/9.2.1/bits/locale_classes.h	/^      locale(const locale& __other, _Facet* __f);$/;"	p	class:std::locale	access:public	signature:(const locale & __other,_Facet * __f)
 locale	/usr/include/c++/9.2.1/bits/locale_classes.h	/^    locale() throw();$/;"	p	class:std::locale	access:public	signature:()
 locale	/usr/include/c++/9.2.1/bits/locale_classes.h	/^    locale(_Impl*) throw();$/;"	p	class:std::locale	access:private	signature:(_Impl *)
@@ -8968,6 +8969,7 @@ magic	/usr/include/sys/user.h	/^  __extension__ unsigned long long int	magic;$/;
 magic	/usr/include/sys/user.h	/^  unsigned long int		magic;$/;"	m	struct:user	typeref:typename:unsigned long int	access:public
 main	inject.cpp	/^int main(int argc, char *argv[])$/;"	f	typeref:typename:int
 main	ptraceAPI.h	/^int main(int argc, char * argv[])$/;"	f	typeref:typename:int
+main	test.cpp	/^int main(int argc, char * argv[])$/;"	f	typeref:typename:int
 make_error_code	/usr/include/c++/9.2.1/bits/ios_base.h	/^  make_error_code(io_errc __e) noexcept$/;"	f	namespace:std	typeref:typename:error_code	signature:(io_errc __e)
 make_error_condition	/usr/include/c++/9.2.1/bits/ios_base.h	/^  make_error_condition(io_errc __e) noexcept$/;"	f	namespace:std	typeref:typename:error_condition	signature:(io_errc __e)
 make_exception_ptr	/usr/include/c++/9.2.1/bits/exception_ptr.h	/^    make_exception_ptr(_Ex __ex) _GLIBCXX_USE_NOEXCEPT$/;"	f	namespace:std	typeref:typename:exception_ptr	signature:(_Ex __ex)
